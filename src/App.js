@@ -1,3 +1,4 @@
+
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -38,8 +39,30 @@ function App() {
   ])
   const [search, setSearch] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [postTitle, setPostTitle] = useState('')
+  const [postBody, setPostBody] = useState('')
 
   const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const id = posts.length ? posts[posts.length - 1].id + 1 : 10
+    const datetime = new Date()
+    const formattedDate = datetime.toLocaleDateString('en-GB')
+    const newPost = {
+      id,
+      title: postTitle,
+      datetime: formattedDate,
+      body: postBody
+    }
+
+    const allPosts = [...posts, newPost]
+    setPosts(allPosts)
+    setPostTitle('')
+    setPostBody('')
+    navigate('/')
+
+  }
 
   const handleDelete = (id) => {
     const postsList = posts.filter(post => post.id !== id)
@@ -59,7 +82,16 @@ function App() {
       >
         <Route index element={<Home posts={posts} />} />
         <Route path="post">
-          <Route index element={<NewPost />} />
+          <Route
+            index
+            element={<NewPost
+              handleSubmit={handleSubmit}
+              postTitle={postTitle}
+              setPostTitle={setPostTitle}
+              postBody={postBody}
+              setPostBody={setPostBody}
+            />}
+          />
           <Route
             path=":id"
             element={<PostPage
