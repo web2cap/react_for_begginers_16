@@ -1,6 +1,6 @@
 
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useInsertionEffect } from "react";
 
 
 import Layout from "./Layout";
@@ -44,6 +44,15 @@ function App() {
 
   const navigate = useNavigate()
 
+  useEffect(() => {
+    const filterResults = posts.filter(post =>
+      ((post.body).toLowerCase()).includes(search.toLowerCase())
+      || ((post.title).toLowerCase()).includes(search.toLowerCase())
+    )
+    setSearchResults(filterResults.reverse())
+  }, [posts, search])
+
+
   const handleSubmit = (e) => {
     e.preventDefault()
     const id = posts.length ? posts[posts.length - 1].id + 1 : 10
@@ -80,7 +89,7 @@ function App() {
           />
         }
       >
-        <Route index element={<Home posts={posts} />} />
+        <Route index element={<Home posts={searchResults} />} />
         <Route path="post">
           <Route
             index
