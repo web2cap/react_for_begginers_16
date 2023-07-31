@@ -11,6 +11,7 @@ import PostPage from "./PostPage";
 import About from "./About";
 import Missing from "./Missing";
 import api from './api/posts'
+import useWindowSize from "./hooks/useWindowSize";
 
 function App() {
   const [posts, setPosts] = useState([])
@@ -22,6 +23,7 @@ function App() {
   const [editBody, setEditBody] = useState('')
 
   const navigate = useNavigate()
+  const { width } = useWindowSize()
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -112,6 +114,7 @@ function App() {
           <Layout
             search={search}
             setSearch={setSearch}
+            width={width}
           />
         }
       >
