@@ -1,18 +1,18 @@
-import { useEffect, useContext, useState } from "react"
+import { useEffect } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
-
-import api from './api/posts'
-import DataContext from './context/DataContext'
+import { useStoreActions, useStoreState } from "easy-peasy"
 
 const EditPost = () => {
-    const { posts, setPosts } = useContext(DataContext)
-
-    const [editTitle, setEditTitle] = useState('')
-    const [editBody, setEditBody] = useState('')
+    const { id } = useParams()
+    const editTitle = useStoreState((state) => state.editTitle)
+    const setEditTitle = useStoreActions((actions) => actions.setEditTitle)
+    const editBody = useStoreState((state) => state.editBody)
+    const setEditBody = useStoreActions((actions) => actions.setEditBody)
+    const editPost = useStoreActions((actions) => actions.editPost)
+    const getPostById = useStoreState((state) => state.getPostById)
 
     const navigate = useNavigate()
-    const { id } = useParams()
-    const post = posts.find(post => (post.id).toString() === id)
+    const post = getPostById(id)
 
     useEffect(() => {
         if (post) {
@@ -21,7 +21,7 @@ const EditPost = () => {
         }
     }, [post, setEditTitle, setEditBody])
 
-    const handleEdit = async (id) => {
+    const handleEdit = (id) => {
         const datetime = new Date()
         const formattedDate = datetime.toLocaleDateString('en-GB')
         const updatePost = {
@@ -30,18 +30,8 @@ const EditPost = () => {
             datetime: formattedDate,
             body: editBody
         }
-        try {
-            const response = await api.put(`/posts/${id}`, updatePost)
-            const updatedPosts = posts.map(
-                post => post.id === id ? { ...response.data } : post
-            )
-            setPosts(updatedPosts)
-            setEditTitle('')
-            setEditBody('')
-            navigate(`/post/${id}`)
-        } catch (err) {
-            console.log(err.message)
-        }
+        editPost(updatePost)
+        navigate(`/post/${id}`)
     }
 
     return (
@@ -69,7 +59,7 @@ const EditPost = () => {
                             onChange={(e) => setEditBody(e.target.value)}
                         />
                         <button
-                            type='submit'
+                            type='button'
                             onClick={() => handleEdit(post.id)}
                         > Submit</button>
                     </form>

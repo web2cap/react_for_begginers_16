@@ -1,18 +1,18 @@
-import { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
-import api from './api/posts'
-import DataContext from './context/DataContext'
 
 const NewPost = () => {
-    const { posts, setPosts } = useContext(DataContext)
-
-    const [postTitle, setPostTitle] = useState('')
-    const [postBody, setPostBody] = useState('')
+    const posts = useStoreState((state) => state.posts)
+    const postTitle = useStoreState((state) => state.postTitle)
+    const setPostTitle = useStoreActions((actions) => actions.setPostTitle)
+    const postBody = useStoreState((state) => state.postBody)
+    const setPostBody = useStoreActions((actions) => actions.setPostBody)
+    const savePost = useStoreActions((actions) => actions.savePost)
 
     const navigate = useNavigate()
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
         const id = posts.length ? posts[posts.length - 1].id + 1 : 10
         const datetime = new Date()
@@ -23,16 +23,8 @@ const NewPost = () => {
             datetime: formattedDate,
             body: postBody
         }
-        try {
-            const response = await api.post('/posts', newPost)
-            const allPosts = [...posts, response.data]
-            setPosts(allPosts)
-            setPostTitle('')
-            setPostBody('')
-            navigate(`/post/${id}`)
-        } catch (err) {
-            console.log(err.message)
-        }
+        savePost(newPost)
+        navigate(`/post/${id}`)
     }
 
     return (
