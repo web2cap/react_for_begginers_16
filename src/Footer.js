@@ -1,9 +1,18 @@
-const Footer = () => {
+import { useStoreState } from "easy-peasy"
 
+const Footer = () => {
     const date = new Date()
+    const postCount = useStoreState((state) => state.postCount)
     return (
         <footer className="Footer">
-            <p>Copyright &copy; {date.getFullYear()}</p>
+            <p>
+                {postCount
+                    ? postCount === 1
+                        ? "Only one post"
+                        : `${postCount} posts`
+                    : "Empty blog"
+                }
+                | &copy; {date.getFullYear()}</p>
         </footer>
     )
 }
